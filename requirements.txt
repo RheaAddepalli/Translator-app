@@ -1,9 +1,16 @@
+# local
+# fastapi==0.109.0
+# uvicorn==0.23.2
+# transformers==4.35.2
+# torch==2.0.1
+
+# # torch==2.1.0
+# numpy<2
+# sentencepiece==0.1.99
+
+# render
 fastapi==0.109.0
 uvicorn==0.23.2
 transformers==4.35.2
-torch==2.0.1
-
-# torch==2.1.0
-numpy<2
+torch==2.0.1+cpu
 sentencepiece==0.1.99
-
