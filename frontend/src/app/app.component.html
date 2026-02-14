@@ -1,0 +1,47 @@
+<div class="container">
+  <mat-card class="card">
+    <h2>GenAI Translator</h2>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Source Language</mat-label>
+      <mat-select [(ngModel)]="sourceLang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.code">
+          {{ lang.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Target Language</mat-label>
+      <mat-select [(ngModel)]="targetLang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.code">
+          {{ lang.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Enter Text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="userText"
+        rows="5"
+        placeholder="Type your text here..."
+      ></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="translate()" [disabled]="loading">
+      Translate
+    </button>
+
+    <div class="spinner" *ngIf="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+    <div class="result" *ngIf="translatedText">
+      <h3>Translated Text:</h3>
+      <p>{{ translatedText }}</p>
+    </div>
+  </mat-card>
+</div>
+

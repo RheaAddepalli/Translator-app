@@ -1,0 +1,41 @@
+# --------------------------
+# Python / FastAPI backend
+# --------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+.env
+venv_translate/
+*.egg-info/
+dist/
+build/
+
+# --------------------------
+# Node / Angular frontend
+# --------------------------
+node_modules/
+dist/
+.tmp/
+out-tsc/
+.angular/cache/
+
+# --------------------------
+# VS Code settings
+# --------------------------
+.vscode/
+*.code-workspace
+
+# --------------------------
+# OS files
+# --------------------------
+.DS_Store
+Thumbs.db
+
+# --------------------------
+# Misc
+# --------------------------
+*.env
+*.bak

@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f0f8ff, #cce7ff);
+}
+
+.card {
+  width: 500px;
+  padding: 20px;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.result {
+  margin-top: 20px;
+  background: #e6f0ff;
+  padding: 15px;
+  border-radius: 8px;
+}
