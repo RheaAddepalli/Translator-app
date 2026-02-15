@@ -19,6 +19,5 @@ fastapi==0.109.0
 uvicorn==0.23.2
 sentencepiece==0.1.99
 torch==2.10.0
-transformers==4.35.2 --prefer-binary
-
+transformers==4.35.2
 
