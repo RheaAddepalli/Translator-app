@@ -69,6 +69,13 @@ frontend_path = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(frontend_path):
     # app.mount("/static", StaticFiles(directory=frontend_path), name="static") caused white screen maybe 
       app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+# at the bottom of main.py
+try:
+    print("Preloading translation models...")
+    get_model_and_tokenizer("en", "hi")
+except Exception as e:
+    print("Error preloading model:", e)
+
 
 # # Catch-all for Angular routing                this also suspicious for causing white screeen so did  this 
 # @app.get("/{full_path:path}")
