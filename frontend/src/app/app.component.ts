@@ -81,16 +81,28 @@ export class AppComponent {
   translatedText = '';
   loading = false;
 
-  sourceLang = 'en';
-  targetLang = 'hi';
+  sourceLang = 'en';   // Keep English as default and fixed
+targetLang = 'hi';   // Users can change this
 
-  languages: LanguageOption[] = [
-    { code: 'en', label: 'English' },
-    { code: 'hi', label: 'Hindi' },
-    { code: 'es', label: 'Spanish' },
-    { code: 'fr', label: 'French' },
-    { code: 'de', label: 'German' },
-  ];
+languages: LanguageOption[] = [
+  // Only target languages are selectable, source is fixed to English
+  { code: 'hi', label: 'Hindi' },
+  { code: 'es', label: 'Spanish' },
+  { code: 'fr', label: 'French' },
+  { code: 'de', label: 'German' },
+];
+
+
+  // sourceLang = 'en';
+  // targetLang = 'hi';
+
+  // languages: LanguageOption[] = [
+  //   { code: 'en', label: 'English' },
+  //   { code: 'hi', label: 'Hindi' },
+  //   { code: 'es', label: 'Spanish' },
+  //   { code: 'fr', label: 'French' },
+  //   { code: 'de', label: 'German' },
+  // ];
 
   constructor(private http: HttpClient) {}
 

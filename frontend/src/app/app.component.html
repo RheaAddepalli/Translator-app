@@ -1,15 +1,22 @@
 <div class="container">
   <mat-card class="card">
     <h2>GenAI Translator</h2>
-
     <mat-form-field appearance="outline" class="full-width">
+  <mat-label>Source Language</mat-label>
+  <mat-select [(ngModel)]="sourceLang" disabled>
+    <mat-option [value]="'en'">English</mat-option>
+  </mat-select>
+</mat-form-field>
+
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
       <mat-label>Source Language</mat-label>
       <mat-select [(ngModel)]="sourceLang">
         <mat-option *ngFor="let lang of languages" [value]="lang.code">
           {{ lang.label }}
         </mat-option>
       </mat-select>
-    </mat-form-field>
+    </mat-form-field> -->
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Target Language</mat-label>
