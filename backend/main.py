@@ -14,7 +14,9 @@ origins = [
     "http://127.0.0.1:4200",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "https://your-frontend.onrender.com"
+    # "https://your-frontend.onrender.com"
+   "https://translator-app-8wf3.onrender.com"
+    
 ]
 
 app.add_middleware(
@@ -65,15 +67,16 @@ frontend_path = os.path.join(os.path.dirname(__file__), "static")
 
 # Serve static files under /static
 if os.path.exists(frontend_path):
-    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+    # app.mount("/static", StaticFiles(directory=frontend_path), name="static") caused white screen maybe 
+      app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
-# Catch-all for Angular routing
-@app.get("/{full_path:path}")
-async def serve_angular(full_path: str):
-    index_file = os.path.join(frontend_path, "index.html")
-    if os.path.exists(index_file):
-        return FileResponse(index_file)
-    return {"message": "Frontend not found"}
+# # Catch-all for Angular routing                this also suspicious for causing white screeen so did  this 
+# @app.get("/{full_path:path}")
+# async def serve_angular(full_path: str):
+#     index_file = os.path.join(frontend_path, "index.html")
+#     if os.path.exists(index_file):
+#         return FileResponse(index_file)
+#     return {"message": "Frontend not found"}
 
 
 
