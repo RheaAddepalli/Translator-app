@@ -1,5 +1,57 @@
 <div class="container">
   <mat-card class="card">
+
+    <h2>GenAI Translator</h2>
+
+    <!-- Fixed languages display -->
+    <p><b>Source Language:</b> English</p>
+    <p><b>Target Language:</b> German</p>
+
+    <!-- Text input -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Enter Text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="userText"
+        rows="5"
+        placeholder="Type English text here..."
+      >
+      </textarea>
+    </mat-form-field>
+
+    <!-- Translate button -->
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="translate()" 
+      [disabled]="loading">
+
+      Translate to German
+
+    </button>
+
+    <!-- Loading spinner -->
+    <div class="spinner" *ngIf="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+    <!-- Output -->
+    <div class="result" *ngIf="translatedText">
+      <h3>German Translation:</h3>
+      <p>{{ translatedText }}</p>
+    </div>
+
+  </mat-card>
+</div>
+
+
+
+
+
+
+<!-- souce is only english and  traget is all  -->
+<!-- <div class="container">
+  <mat-card class="card">
     <h2>GenAI Translator</h2>
     <mat-form-field appearance="outline" class="full-width">
   <mat-label>Source Language</mat-label>
@@ -9,14 +61,59 @@
 </mat-form-field>
 
 
-    <!-- <mat-form-field appearance="outline" class="full-width">
+   
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Target Language</mat-label>
+      <mat-select [(ngModel)]="targetLang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.code">
+          {{ lang.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Enter Text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="userText"
+        rows="5"
+        placeholder="Type your text here..."
+      ></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="translate()" [disabled]="loading">
+      Translate
+    </button>
+
+    <div class="spinner" *ngIf="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+    <div class="result" *ngIf="translatedText">
+      <h3>Translated Text:</h3>
+      <p>{{ translatedText }}</p>
+    </div>
+  </mat-card>
+</div> -->
+
+
+
+
+
+
+<!-- for all languages 
+ <div class="container">
+  <mat-card class="card">
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Source Language</mat-label>
       <mat-select [(ngModel)]="sourceLang">
         <mat-option *ngFor="let lang of languages" [value]="lang.code">
           {{ lang.label }}
         </mat-option>
       </mat-select>
-    </mat-form-field> -->
+    </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Target Language</mat-label>
@@ -51,4 +148,4 @@
     </div>
   </mat-card>
 </div>
-
+ -->
