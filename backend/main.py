@@ -85,11 +85,11 @@ if os.path.exists(frontend_path):
 # -------------------
 # Optional: Preload only English->Hindi (or your most common target) on startup
 # -------------------
-try:
-    print("Preloading default translation model: English -> Hindi")
-    get_model_and_tokenizer(SOURCE_LANG, "hi")
-except Exception as e:
-    print("Error preloading model:", e)
+# try:
+#     print("Preloading default translation model: English -> Hindi")
+#     get_model_and_tokenizer(SOURCE_LANG, "hi")
+# except Exception as e:
+#     print("Error preloading model:", e)
 
 
 
