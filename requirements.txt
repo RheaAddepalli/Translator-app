@@ -15,12 +15,16 @@
 # sentencepiece==0.1.99
 # # torch==2.0.1
 # torch==2.10.0
+# fastapi==0.109.0
+# uvicorn==0.23.2
+# sentencepiece==0.1.99
+# torch==2.10.0
+# transformers==4.35.2
+# sacremoses==0.0.53
+
 fastapi==0.109.0
 uvicorn==0.23.2
 sentencepiece==0.1.99
-# torch==2.10.0
-torch==2.1.0
-
+torch==2.10.0
 transformers==4.35.2
 sacremoses==0.0.53
-
