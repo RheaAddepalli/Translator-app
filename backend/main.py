@@ -32,41 +32,40 @@ app.add_middleware(
 # -------------------
 class TranslateRequest(BaseModel):
     text: str
-    src_lang: str
-    tgt_lang: str
 
-# Only preload English source
+# Only English -> German
 SOURCE_LANG = "en"
+TARGET_LANG = "de"
 
 model_cache = {}
 tokenizer_cache = {}
 
-def get_model_and_tokenizer(src_lang: str, tgt_lang: str):
+def load_model():
     """
-    Lazy load: Only load a model/tokenizer if not already cached.
+    Preload English -> German model on startup.
     """
-    model_name = f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}"
-    if model_name not in model_cache:
-        print(f"Loading model: {model_name}")
-        tokenizer_cache[model_name] = MarianTokenizer.from_pretrained(model_name)
-        model_cache[model_name] = MarianMTModel.from_pretrained(model_name)
-    return model_cache[model_name], tokenizer_cache[model_name]
+    model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
+    print(f"Loading model: {model_name}")
+    tokenizer_cache[model_name] = MarianTokenizer.from_pretrained(model_name)
+    model_cache[model_name] = MarianMTModel.from_pretrained(model_name)
+
+# Preload model
+try:
+    load_model()
+except Exception as e:
+    print("Error preloading model:", e)
 
 @app.post("/translate")
 async def translate(request: TranslateRequest):
     text = request.text.strip()
-    src = request.src_lang.lower()
-    tgt = request.tgt_lang.lower()
-
     if not text:
         return {"translated_text": "Please provide text to translate."}
 
-    # Only allow English source to reduce memory load
-    if src != SOURCE_LANG:
-        return {"translated_text": "Only English source is supported."}
+    model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
+    model = model_cache[model_name]
+    tokenizer = tokenizer_cache[model_name]
 
     try:
-        model, tokenizer = get_model_and_tokenizer(src, tgt)
         batch = tokenizer([text], return_tensors="pt")
         translated = model.generate(**batch)
         translated_text = tokenizer.decode(translated[0], skip_special_tokens=True)
@@ -78,9 +77,102 @@ async def translate(request: TranslateRequest):
 # Serve Angular frontend
 # -------------------
 frontend_path = os.path.join(os.path.dirname(__file__), "static")
-
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
+
+
+
+
+
+
+
+
+
+
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.responses import FileResponse
+# from pydantic import BaseModel
+# from transformers import MarianMTModel, MarianTokenizer
+# import os
+
+# app = FastAPI()
+
+# # -------------------
+# # CORS
+# # -------------------
+# origins = [
+#     "http://localhost:4200",
+#     "http://127.0.0.1:4200",
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "https://translator-app-8wf3.onrender.com"
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"]
+# )
+
+# # -------------------
+# # Translation API
+# # -------------------
+# class TranslateRequest(BaseModel):
+#     text: str
+#     src_lang: str
+#     tgt_lang: str
+
+# # Only preload English source
+# SOURCE_LANG = "en"
+
+# model_cache = {}
+# tokenizer_cache = {}
+
+# def get_model_and_tokenizer(src_lang: str, tgt_lang: str):
+#     """
+#     Lazy load: Only load a model/tokenizer if not already cached.
+#     """
+#     model_name = f"Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}"
+#     if model_name not in model_cache:
+#         print(f"Loading model: {model_name}")
+#         tokenizer_cache[model_name] = MarianTokenizer.from_pretrained(model_name)
+#         model_cache[model_name] = MarianMTModel.from_pretrained(model_name)
+#     return model_cache[model_name], tokenizer_cache[model_name]
+
+# @app.post("/translate")
+# async def translate(request: TranslateRequest):
+#     text = request.text.strip()
+#     src = request.src_lang.lower()
+#     tgt = request.tgt_lang.lower()
+
+#     if not text:
+#         return {"translated_text": "Please provide text to translate."}
+
+#     # Only allow English source to reduce memory load
+#     if src != SOURCE_LANG:
+#         return {"translated_text": "Only English source is supported."}
+
+#     try:
+#         model, tokenizer = get_model_and_tokenizer(src, tgt)
+#         batch = tokenizer([text], return_tensors="pt")
+#         translated = model.generate(**batch)
+#         translated_text = tokenizer.decode(translated[0], skip_special_tokens=True)
+#         return {"translated_text": translated_text}
+#     except Exception as e:
+#         return {"translated_text": f"Error translating: {e}"}
+
+# # -------------------
+# # Serve Angular frontend
+# # -------------------
+# frontend_path = os.path.join(os.path.dirname(__file__), "static")
+
+# if os.path.exists(frontend_path):
+#     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 # -------------------
 # Optional: Preload only English->Hindi (or your most common target) on startup
