@@ -1,0 +1,1 @@
+{"ast":null,"code":"// frontend/src/environments/environment.prod.ts\nexport const environment = {\n  production: true,\n  apiUrl: 'https://translator-app-8wf3.onrender.com' // Replace with your Render backend URL\n};","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}
