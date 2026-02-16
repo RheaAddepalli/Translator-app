@@ -1,21 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from transformers import MarianMTModel, MarianTokenizer
 import os
+
+# NEW: Argos imports
+import argostranslate.package
+import argostranslate.translate
 
 app = FastAPI()
 
-# -------------------
 # CORS
-# -------------------
 origins = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
     "http://localhost:8000",
-    "http://127.0.0.1:8000",
     "https://translator-app-8wf3.onrender.com"
 ]
 
@@ -27,58 +26,143 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# -------------------
-# Translation API
-# -------------------
+# Request model
 class TranslateRequest(BaseModel):
     text: str
 
-# Only English -> German
-SOURCE_LANG = "en"
-TARGET_LANG = "de"
 
-model_cache = {}
-tokenizer_cache = {}
+# NEW: Install Argos model from models folder
+model_path = os.path.join(
+    os.path.dirname(__file__),
+    "models",
+    "translate-en_de-1_0.argosmodel"
+)
 
-def load_model():
-    """
-    Preload English -> German model on startup.
-    """
-    model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
-    print(f"Loading model: {model_name}")
-    tokenizer_cache[model_name] = MarianTokenizer.from_pretrained(model_name)
-    model_cache[model_name] = MarianMTModel.from_pretrained(model_name)
+if os.path.exists(model_path):
+    print("Installing Argos model...")
+    argostranslate.package.install_from_path(model_path)
+    print("Argos model installed successfully")
+else:
+    print("Argos model NOT found at:", model_path)
 
-# Preload model
-try:
-    load_model()
-except Exception as e:
-    print("Error preloading model:", e)
 
 @app.post("/translate")
 async def translate(request: TranslateRequest):
+
     text = request.text.strip()
+
     if not text:
         return {"translated_text": "Please provide text to translate."}
 
-    model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
-    model = model_cache[model_name]
-    tokenizer = tokenizer_cache[model_name]
-
     try:
-        batch = tokenizer([text], return_tensors="pt")
-        translated = model.generate(**batch)
-        translated_text = tokenizer.decode(translated[0], skip_special_tokens=True)
+        # NEW: Use Argos translate instead of MarianMT
+        translated_text = argostranslate.translate.translate(
+            text,
+            "en",
+            "de"
+        )
+
         return {"translated_text": translated_text}
+
     except Exception as e:
         return {"translated_text": f"Error translating: {e}"}
 
-# -------------------
+
 # Serve Angular frontend
-# -------------------
 frontend_path = os.path.join(os.path.dirname(__file__), "static")
+
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
+
+
+
+
+
+
+
+
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.responses import FileResponse
+# from pydantic import BaseModel
+# from transformers import MarianMTModel, MarianTokenizer
+# import os
+
+# app = FastAPI()
+
+# # -------------------
+# # CORS
+# # -------------------
+# origins = [
+#     "http://localhost:4200",
+#     "http://127.0.0.1:4200",
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "https://translator-app-8wf3.onrender.com"
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"]
+# )
+
+# # -------------------
+# # Translation API
+# # -------------------
+# class TranslateRequest(BaseModel):
+#     text: str
+
+# # Only English -> German
+# SOURCE_LANG = "en"
+# TARGET_LANG = "de"
+
+# model_cache = {}
+# tokenizer_cache = {}
+
+# def load_model():
+#     """
+#     Preload English -> German model on startup.
+#     """
+#     model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
+#     print(f"Loading model: {model_name}")
+#     tokenizer_cache[model_name] = MarianTokenizer.from_pretrained(model_name)
+#     model_cache[model_name] = MarianMTModel.from_pretrained(model_name)
+
+# # Preload model
+# try:
+#     load_model()
+# except Exception as e:
+#     print("Error preloading model:", e)
+
+# @app.post("/translate")
+# async def translate(request: TranslateRequest):
+#     text = request.text.strip()
+#     if not text:
+#         return {"translated_text": "Please provide text to translate."}
+
+#     model_name = f"Helsinki-NLP/opus-mt-{SOURCE_LANG}-{TARGET_LANG}"
+#     model = model_cache[model_name]
+#     tokenizer = tokenizer_cache[model_name]
+
+#     try:
+#         batch = tokenizer([text], return_tensors="pt")
+#         translated = model.generate(**batch)
+#         translated_text = tokenizer.decode(translated[0], skip_special_tokens=True)
+#         return {"translated_text": translated_text}
+#     except Exception as e:
+#         return {"translated_text": f"Error translating: {e}"}
+
+# # -------------------
+# # Serve Angular frontend
+# # -------------------
+# frontend_path = os.path.join(os.path.dirname(__file__), "static")
+# if os.path.exists(frontend_path):
+#     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 
 
