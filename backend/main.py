@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
 
-# NEW: Argos imports
 import argostranslate.package
 import argostranslate.translate
 
@@ -26,12 +25,11 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Request model
 class TranslateRequest(BaseModel):
     text: str
 
 
-# NEW: Install Argos model from models folder
+# Install model ONCE
 model_path = os.path.join(
     os.path.dirname(__file__),
     "models",
@@ -41,9 +39,18 @@ model_path = os.path.join(
 if os.path.exists(model_path):
     print("Installing Argos model...")
     argostranslate.package.install_from_path(model_path)
-    print("Argos model installed successfully")
-else:
-    print("Argos model NOT found at:", model_path)
+    print("Installed successfully")
+
+
+# PRELOAD translation object ONCE
+installed_languages = argostranslate.translate.get_installed_languages()
+
+from_lang = next(lang for lang in installed_languages if lang.code == "en")
+to_lang = next(lang for lang in installed_languages if lang.code == "de")
+
+translation = from_lang.get_translation(to_lang)
+
+print("Translation model preloaded successfully")
 
 
 @app.post("/translate")
@@ -52,27 +59,104 @@ async def translate(request: TranslateRequest):
     text = request.text.strip()
 
     if not text:
-        return {"translated_text": "Please provide text to translate."}
+        return {"translated_text": "Please provide text"}
 
-    try:
-        # NEW: Use Argos translate instead of MarianMT
-        translated_text = argostranslate.translate.translate(
-            text,
-            "en",
-            "de"
-        )
+    translated_text = translation.translate(text)
 
-        return {"translated_text": translated_text}
-
-    except Exception as e:
-        return {"translated_text": f"Error translating: {e}"}
+    return {"translated_text": translated_text}
 
 
-# Serve Angular frontend
+# Serve frontend
 frontend_path = os.path.join(os.path.dirname(__file__), "static")
 
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
+
+
+
+
+
+
+
+
+
+
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.staticfiles import StaticFiles
+# from pydantic import BaseModel
+# import os
+
+# # NEW: Argos imports
+# import argostranslate.package
+# import argostranslate.translate
+
+# app = FastAPI()
+
+# # CORS
+# origins = [
+#     "http://localhost:4200",
+#     "http://127.0.0.1:4200",
+#     "http://localhost:8000",
+#     "https://translator-app-8wf3.onrender.com"
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"]
+# )
+
+# # Request model
+# class TranslateRequest(BaseModel):
+#     text: str
+
+
+# # NEW: Install Argos model from models folder
+# model_path = os.path.join(
+#     os.path.dirname(__file__),
+#     "models",
+#     "translate-en_de-1_0.argosmodel"
+# )
+
+# if os.path.exists(model_path):
+#     print("Installing Argos model...")
+#     argostranslate.package.install_from_path(model_path)
+#     print("Argos model installed successfully")
+# else:
+#     print("Argos model NOT found at:", model_path)
+
+
+# @app.post("/translate")
+# async def translate(request: TranslateRequest):
+
+#     text = request.text.strip()
+
+#     if not text:
+#         return {"translated_text": "Please provide text to translate."}
+
+#     try:
+#         # NEW: Use Argos translate instead of MarianMT
+#         translated_text = argostranslate.translate.translate(
+#             text,
+#             "en",
+#             "de"
+#         )
+
+#         return {"translated_text": translated_text}
+
+#     except Exception as e:
+#         return {"translated_text": f"Error translating: {e}"}
+
+
+# # Serve Angular frontend
+# frontend_path = os.path.join(os.path.dirname(__file__), "static")
+
+# if os.path.exists(frontend_path):
+#     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 
 
